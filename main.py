@@ -59,6 +59,10 @@ class Board:
 		print(beforebottom)
 		print(bottomline)		
 		
+	def returnBoard(self):
+		aList = self.bRows
+		return aList
+		
 # Where the player chooses which row to drop a piece in
 def makeMove(player):
 	while True:
@@ -80,28 +84,67 @@ def makeMove(player):
 
 # Checks if player 
 def checkWin(board, userChoice):
-	print("")
+	checks = 1
+	boardList = board.returnBoard()
+	usertile = boardList[userChoice][-1] # Gets the last added tile in list
+	level = len(boardList[userChoice])-1
+	while True:
+		if checks == 1:
+			countWin = 1
+			countWin = checkRight(boardList, usertile, userChoice, level, countWin)
+			print(countWin)
+			if countWin == 4:
+				return SUCCESS
+			else:
+				return FAIL
+			
 	# TODO COMPLETE 
+	
+def checkRight(aList, tile, row, level, count):
+	try:
+		if aList[row+1][level] == tile:
+			count += 1
+			row += 1
+			if count == 4:
+				raise Exception
+			count = checkRight(aList, tile, row, level, count)
+		else:
+			return int(count)
+	except:
+		return int(count) 
+	return count
+	 
 	
 
 def main():
+	winState = 0 
 	board = Board()
 	board.createBoard()	
-	count = 0 # Used to keep track of whose turn it is
+	turn = 0 # Used to keep track of whose turn it is
 	while True:
 		#board.tprintb()
-		userChoice = makeMove(count%2)
+		userChoice = makeMove(turn%2)
 		try: 
 			userChoice = int(userChoice)
 		except:
 			break # Only way to get here is through typing exit
-		checkMax = board.chosenMove(userChoice, count%2)
+		checkMax = board.chosenMove(userChoice, turn%2)
 		if checkMax == SUCCESS:
 			board.drawBoard()
-			count +=1
+			isWin = checkWin(board, userChoice)
+			if isWin == SUCCESS:
+				winState = 1
+				break
+			turn +=1
 		else:
 			print("The maximum number of tiles in that row has been reach try again")
-	print("A player has chosen to quit")
+	if winState == 1:
+		if turn%2 == 0:
+			print("Player 1 has won!")
+		else:
+			print("Player 2 has won!")
+	else:
+		print("A player has chosen to quit")
 
 main()
 	
