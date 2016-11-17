@@ -45,6 +45,8 @@ class Board:
 		beforebottom = "-------------------"
 		bottomline = "| 0 1 2 3 4 5 6 7 |"
 		largestBin = [0,0] # [len(bin), bin number]
+		for i in range(40):
+			print("") # Clean up above board
 		for i in range(MAXROW):
 			if largestBin[0] <= len(self.bRows[i]):
 				largestBin = [len(self.bRows[i]), i]
@@ -109,7 +111,18 @@ def checkWin(board, userChoice):
 			if countWin == 4:
 				return SUCCESS
 			else:
-				return FAIL
+				checks = 3
+		if checks == 3:
+			countWin = 1
+			countWin = checkdagRU(boardList, usertile, userChoice, level, countWin)
+			if countWin == 4:
+				return SUCCESS
+			else:
+				countWin = checkdagRD(boardList, usertile, userChoice, level, countWin)
+				if countWin == 4:
+					return SUCCESS
+				else:
+					return FAIL 
 				
 			
 	# TODO COMPLETE 
@@ -119,6 +132,8 @@ def checkRight(aList, tile, row, level, count):
 		if aList[row+1][level] == tile:
 			count += 1
 			row += 1
+			if row >= MAXROW: # Border checking
+				row = LIMIT
 			if count == 4:
 				raise Exception
 			count = checkRight(aList, tile, row, level, count)
@@ -133,6 +148,8 @@ def checkLeft(aList, tile, row, level, count):
 		if aList[row-1][level] == tile:
 			count +=1
 			row -=1
+			if row <= 0: # Border checking
+				row = LIMIT
 			if count == 4:
 				raise Exception
 			count = checkLeft(aList, tile, row, level, count) 
@@ -141,10 +158,11 @@ def checkLeft(aList, tile, row, level, count):
 	except:
 		return count
 	return count
+
 # Never need to check up because starting at highest position possible
 def checkDown(aList, tile, row, level, count):
 	try:
-		if aList[row][level] == tile:
+		if aList[row][level-1] == tile:
 			count +=1
 			level -=1
 			if level <= 0: 
@@ -159,15 +177,58 @@ def checkDown(aList, tile, row, level, count):
 	except:
 		return count
 	return count
-	 
+
+# Checks diagonal right up 	 
+def checkdagRU(aList, tile, row, level, count):
+	try:
+		if aList[row+1][level+1] == tile:
+			count +=1
+			row +=1
+			level +=1
+			if level >= MAXHEIGHT: # Only have to check upper limit
+				raise Exception
+			elif row >= MAXROW:
+				raise Exception
+			elif count == 4: 
+				raise Exception
+			else:
+				count = checkdagRU(aList, tile, row, level, count)
+		else:
+			return count
+	except:
+		return count
+	return count 
+
+# Checks diagonal right down
+def checkdagRD(aList, tile, row, level, count):
+	try:
+		if aList[row-1][level-1] == tile:
+			count +=1
+			row -=1
+			level -=1
+			if level <= 0: #Only have to check lower limit
+				raise Exception
+			elif row <= 0:
+				raise Exception 
+			elif count == 4:
+				raise Exception
+			else:
+				count = checkdagRD(aList, tile, row, level, count) 
+		else:
+			return count 
+	except:
+		return count
+	return count 
 	
 
 def main():
+	# Incase somehow there is a tie 
+	maxTurns = (MAXHEIGHT * MAXROW) -1
 	winState = 0 
 	board = Board()
 	board.createBoard()	
 	turn = 0 # Used to keep track of whose turn it is
-	while True:
+	while turn != maxTurns:
 		#board.tprintb()
 		userChoice = makeMove(turn%2)
 		try: 
@@ -189,6 +250,8 @@ def main():
 			print("Player 1 has won!")
 		else:
 			print("Player 2 has won!")
+	elif maxTurns == turn:
+		print("I honestly never thought it would get here... All tied up") 
 	else:
 		print("A player has chosen to quit")
 
