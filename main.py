@@ -39,8 +39,25 @@ class Board:
 		print(self.bRows)
 	# Draws Board 
 	def drawBoard(self):
-		print("")
-		# TODO 
+		beforebottom = "-------------------"
+		bottomline = "| 0 1 2 3 4 5 6 7 |"
+		largestBin = [0,0] # [len(bin), bin number]
+		for i in range(MAXROW):
+			if largestBin[0] <= len(self.bRows[i]):
+				largestBin = [len(self.bRows[i]), i]
+		for i in range(largestBin[0]-1, -1, -1):
+			line = "| "
+			for x in range(MAXROW):
+				try:
+					piece = self.bRows[x][i]
+					piece += " "
+					line += piece
+				except:
+			  		line += "  "
+			line += "|"
+			print(line)	
+		print(beforebottom)
+		print(bottomline)		
 		
 # Where the player chooses which row to drop a piece in
 def makeMove(player):
@@ -72,7 +89,7 @@ def main():
 	board.createBoard()	
 	count = 0 # Used to keep track of whose turn it is
 	while True:
-		board.tprintb()
+		#board.tprintb()
 		userChoice = makeMove(count%2)
 		try: 
 			userChoice = int(userChoice)
@@ -80,7 +97,7 @@ def main():
 			break # Only way to get here is through typing exit
 		checkMax = board.chosenMove(userChoice, count%2)
 		if checkMax == SUCCESS:
-			
+			board.drawBoard()
 			count +=1
 		else:
 			print("The maximum number of tiles in that row has been reach try again")
