@@ -92,11 +92,15 @@ def checkWin(board, userChoice):
 		if checks == 1:
 			countWin = 1
 			countWin = checkRight(boardList, usertile, userChoice, level, countWin)
-			print(countWin)
 			if countWin == 4:
 				return SUCCESS
 			else:
-				return FAIL
+				countWin = checkLeft(boardList, usertile, userChoice, level, countWin)
+				if countWin == 4:
+					return SUCCESS
+				else:
+					return FAIL # Add to checks to check different things
+				
 			
 	# TODO COMPLETE 
 	
@@ -112,6 +116,20 @@ def checkRight(aList, tile, row, level, count):
 			return int(count)
 	except:
 		return int(count) 
+	return count
+
+def checkLeft(aList, tile, row, level, count):
+	try:
+		if aList[row-1][level] == tile:
+			count +=1
+			row -=1
+			if count == 4:
+				raise Exception
+			count = checkLeft(aList, tile, row, level, count) 
+		else:
+			return count
+	except:
+		return count
 	return count
 	 
 	
