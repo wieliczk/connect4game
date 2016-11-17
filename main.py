@@ -11,8 +11,6 @@ FAIL = 0
 PLAYERONE = "x"
 PLAYERTWO = "o"
 
-# Limit is used in checks to avoid 
-LIMIT = 1000000000000000000000000
 
 class Board:
 	""" Board for the game"""
@@ -118,6 +116,17 @@ def checkWin(board, userChoice):
 			if countWin == 4:
 				return SUCCESS
 			else:
+				countWin = checkdagLD(boardList, usertile, userChoice, level, countWin)
+				if countWin == 4:
+					return SUCCESS
+				else:
+					checks = 4
+		if checks == 4:
+			countWin = 1
+			countWin = checkdagLU(boardList, usertile, userChoice, level, countWin)
+			if countWin == 4:
+				return SUCCESS
+			else:
 				countWin = checkdagRD(boardList, usertile, userChoice, level, countWin)
 				if countWin == 4:
 					return SUCCESS
@@ -133,7 +142,7 @@ def checkRight(aList, tile, row, level, count):
 			count += 1
 			row += 1
 			if row >= MAXROW: # Border checking
-				row = LIMIT
+				raise Exception 
 			if count == 4:
 				raise Exception
 			count = checkRight(aList, tile, row, level, count)
@@ -166,9 +175,9 @@ def checkDown(aList, tile, row, level, count):
 			count +=1
 			level -=1
 			if level <= 0: 
-				level = LIMIT
+				raise Exception
 			elif level >= MAXHEIGHT:
-				level = LIMIT
+				raise Exception
 			if count == 4:
 				raise Exception
 			count = checkDown(aList, tile, row, level, count)
@@ -198,9 +207,51 @@ def checkdagRU(aList, tile, row, level, count):
 	except:
 		return count
 	return count 
+	
+# Checks diagonal left up
+def checkdagLU(aList, tile, row, level, count):
+	try:
+		if aList[row-1][level+1] == tile:
+			count +=1
+			row -=1
+			level +=1
+			if level >= MAXHEIGHT:
+				raise Exception
+			elif row <= 0:
+				raise Exception
+			elif count == 4:
+				raise Exception
+			else:
+				count = checkdagLU(aList, tile, row, level, count)
+		else:
+			return count
+	except:
+		return count
+	return count
 
 # Checks diagonal right down
 def checkdagRD(aList, tile, row, level, count):
+	try: 
+		if aList[row+1][level-1] == tile:
+			count +=1
+			row +=1
+			level -=1
+			if level <= 0:
+				raise Exception
+			elif row >= MAXROW:
+				raise Exception
+			elif count == 4:
+				raise Exception
+			else:
+				count = checkdagRD(aList, tile, row, level, count)
+		else:
+			return count
+	except:
+		return count 
+	return count
+
+# Checks diagonal left down
+def checkdagLD(aList, tile, row, level, count):
 	try:
 		if aList[row-1][level-1] == tile:
 			count +=1
@@ -213,7 +264,7 @@ def checkdagRD(aList, tile, row, level, count):
 			elif count == 4:
 				raise Exception
 			else:
-				count = checkdagRD(aList, tile, row, level, count) 
+				count = checkdagLD(aList, tile, row, level, count) 
 		else:
 			return count 
 	except:
