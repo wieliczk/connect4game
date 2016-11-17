@@ -11,6 +11,9 @@ FAIL = 0
 PLAYERONE = "x"
 PLAYERTWO = "o"
 
+# Limit is used in checks to avoid 
+LIMIT = 1000000000000000000000000
+
 class Board:
 	""" Board for the game"""
 	
@@ -99,7 +102,14 @@ def checkWin(board, userChoice):
 				if countWin == 4:
 					return SUCCESS
 				else:
-					return FAIL # Add to checks to check different things
+					checks = 2
+		if checks == 2:
+			countWin = 1
+			countWin = checkDown(boardList, usertile, userChoice, level, countWin)
+			if countWin == 4:
+				return SUCCESS
+			else:
+				return FAIL
 				
 			
 	# TODO COMPLETE 
@@ -126,6 +136,24 @@ def checkLeft(aList, tile, row, level, count):
 			if count == 4:
 				raise Exception
 			count = checkLeft(aList, tile, row, level, count) 
+		else:
+			return count
+	except:
+		return count
+	return count
+# Never need to check up because starting at highest position possible
+def checkDown(aList, tile, row, level, count):
+	try:
+		if aList[row][level] == tile:
+			count +=1
+			level -=1
+			if level <= 0: 
+				level = LIMIT
+			elif level >= MAXHEIGHT:
+				level = LIMIT
+			if count == 4:
+				raise Exception
+			count = checkDown(aList, tile, row, level, count)
 		else:
 			return count
 	except:
