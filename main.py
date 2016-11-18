@@ -274,7 +274,7 @@ def checkdagLD(aList, tile, row, level, count):
 
 def main():
 	# Incase somehow there is a tie 
-	maxTurns = (MAXHEIGHT * MAXROW) -1
+	maxTurns = (MAXHEIGHT * MAXROW)
 	winState = 0 
 	board = Board()
 	board.createBoard()	
