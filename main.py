@@ -1,4 +1,3 @@
-import sys
 """ Main game for Connect Four game
 	Game Requires no input as it is 8 long and 8 high"""
 
@@ -10,6 +9,8 @@ SUCCESS = 1
 FAIL = 0
 PLAYERONE = "x"
 PLAYERTWO = "o"
+SPACE =  " "*30
+GENMOVE = "bot"
 
 
 class Board:
@@ -40,8 +41,14 @@ class Board:
 		print(self.bRows)
 	# Draws Board 
 	def drawBoard(self):
-		beforebottom = "-------------------"
-		bottomline = "| 0 1 2 3 4 5 6 7 |"
+		beforebottom = SPACE
+		for i in range(MAXROW):
+			beforebottom += "--"
+		beforebottom += "---"
+		bottomline = SPACE + "| "
+		for i in range(MAXROW):
+			bottomline += str(i) + " "
+		bottomline += "|"
 		largestBin = [0,0] # [len(bin), bin number]
 		for i in range(40):
 			print("") # Clean up above board
@@ -49,8 +56,8 @@ class Board:
 			if largestBin[0] <= len(self.bRows[i]):
 				largestBin = [len(self.bRows[i]), i]
 		for i in range(largestBin[0]-1, -1, -1):
-			line = "| "
-			for x in range(MAXROW):
+			line = SPACE + "| "
+			for x in range(MAXHEIGHT):
 				try:
 					piece = self.bRows[x][i]
 					piece += " "
@@ -67,24 +74,131 @@ class Board:
 		return aList
 		
 # Where the player chooses which row to drop a piece in
-def makeMove(player):
+def makeMove(player, board):
 	while True:
 		if player == 1:
 			turn = "Player 2: "
 		if player == 0:
 			turn = "Player 1: "
 		try:
-			Pchoice = input(turn + "Pick a number on the board from 0-7 to make a move and 'exit' to quit: ")
-			if Pchoice == QUITS: # Exits
+			Pchoice = input(turn + "Pick a number on the board from 0-7 to make a move or 'exit' to exit and 'bot' to generate a move: ")
+			if Pchoice == GENMOVE:
 				break
-			if int(Pchoice) in ACCEPTED:
+			elif Pchoice == QUITS: # Exits
+				break
+			elif int(Pchoice) in ACCEPTED:
 				break
 			else:
 				raise Exception
 		except:
-			print("Incorrect input")	
+			print("Incorrect input")
+	
+	if Pchoice == GENMOVE:
+		Pchoice = botMove(player, board) # Somewhere in bot move 
 	return Pchoice
 
+def botMove(player, board):
+	if player == 0:
+		tile = PLAYERONE
+	else:
+		tile = PLAYERTWO
+	isWin, choice = checkBotWin(tile, board)
+	if isWin:
+		return choice
+	# Reverse tile to check for a lose 
+	if tile == PLAYERONE:
+		tile = PLAYERTWO
+	else:
+		tile = PLAYERONE
+	isWin, choice = checkBotLose(tile, board)
+	if isWin:
+		return choice
+	return 0
+	# CHECK FOR A WIN // DONE
+	# CHECK FOR A LOSS // DONE
+	# GENERATE A CHOICE // TODO (LAST THING TODO) 
+
+
+# Checks for a winning move for opponent
+def checkBotLose(tile, board):
+	boardList = board.returnBoard()
+	for i in range(len(boardList)):
+		boardList[i].append(tile)
+		countLoss = 1
+		countLoss = checkRight(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()		
+			return True, i
+		countLoss = checkLeft(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()
+			return True, i
+		countLoss = 1
+		countLoss = checkDown(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()
+			return True, i
+		countLoss = 1
+		countLoss = checkdagRU(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()
+			return True, i
+		countLoss = checkdagLD(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()
+			return True, i
+		countLoss = 1
+		countLoss = checkdagLU(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()
+			return True, i 
+		countLoss = checkdagRD(boardList, tile, i, len(boardList[i])-1, countLoss)
+		if countLoss == 4:
+			boardList[i].pop()
+			return True, i
+		boardList[i].pop()
+	return False, None
+			
+# Looks for a win on the board 
+def checkBotWin(tile, board):
+	boardList = board.returnBoard()
+	for i in range(len(boardList)):
+		boardList[i].append(tile)
+		countWin = 1
+		countWin = checkRight(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		countWin = checkLeft(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		countWin = 1
+		countWin = checkDown(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		countWin = 1
+		countWin = checkdagRU(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		countWin = checkdagLD(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		countWin = 1
+		countWin = checkdagLU(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		countWin = checkdagRD(boardList, tile, i, len(boardList[i])-1, countWin)
+		if countWin == 4:
+			boardList[i].pop()
+			return True, i
+		boardList[i].pop()
+	return False, None
+	
 # Checks if player 
 def checkWin(board, userChoice):
 	checks = 1
@@ -270,7 +384,8 @@ def checkdagLD(aList, tile, row, level, count):
 	except:
 		return count
 	return count 
-	
+ 
+ 
 
 def main():
 	# Incase somehow there is a tie 
@@ -278,10 +393,12 @@ def main():
 	winState = 0 
 	board = Board()
 	board.createBoard()	
+	for i in range(60):
+		print("")
 	turn = 0 # Used to keep track of whose turn it is
 	while turn != maxTurns:
 		#board.tprintb()
-		userChoice = makeMove(turn%2)
+		userChoice = makeMove(turn%2, board)
 		try: 
 			userChoice = int(userChoice)
 		except:
