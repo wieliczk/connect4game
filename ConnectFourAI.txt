@@ -1,0 +1,128 @@
+step one - negamax
+step two - alpha-beta pruning
+step three - transposition tables - aka symmetry.
+
+Game AI is its own class
+
+
+node:
+data :name,  board configuration, minimax values,and parent nodes
+alpha-beta values are global
+pointers: All possible next moves (0, 1, 2, 3, 4, 5, 6)
+A move is impossible if the row is full.
+first node is maximizer, of an empty board, with MM = -inf, A = -inf, B = inf
+win states will have a value of 100, lose states a value of -100, and ties are 0.
+
+Multiple parent nodes.
+To optimize alpha-beta search, we allow for a node to be reachable from multiple states
+A node can have up to 7 parents (the previous players chips which have empty space above
+them).
+All parents of a node must come from the same depth (depth = # of turns.)
+
+
+root = (empty board),
+leaf node: when a win or loss is made (four in a row of any colour) the tree ends.
+every node is a unique state. 
+Thus a node can have multiple parents.
+But we do not care about parents higher than the current (root) state.
+(this doesn't cut down on amount of searched spaces but is better on memory than dup states.
+The name of each state must be unique. (Use the board config as a name, 
+or use some other system? ) (name system:Depth, then letter name ; 6AA for ex.)
+Possible depth first alphabetical order. Would take at most 5 letters with symmetry.
+The depth can be contained in the name (6F, for example) for ease in symmetry and 
+parent checking.
+
+names and nodes will be stored via dictionary.
+
+Symmetry. There is mirror symmetry across the middle for many states.
+
+As such; the organization of columns (0 1 2 3 4 5 6) is equal to (6 5 4 3 2 1), 
+and if there are only chips on 1/2 of the board (0 1 2 3, or 3 4 5 6), (0 1 2 3) == (6 5 4 3)
+Thus, there are only 4 real choices for a board that doesn't have chips on both sides. 
+For the sake of coding ease, our AIs "favorite side" wil be the left from 0.
+With symmetry each node can be represented by at most a 5 letter name instead of 9.
+
+Symmetrical states will be in the same depth range.
+
+
+How many possible 4-in-a-row wins(accounting for symmetry)?
+Vertical : 12 (3 positions in 4 columns.)
+Horizontal:12 (2 positions in 6 rows.)
+Diagonal: 12(3 positions vertically & 2 positions hori. make 6 possible positions,
+which can hold 2 types of diagonal, thus (3x2)x2 = 12 wins
+Therefore we have 36 possible wins, of which any other space can contain any assortment
+of both tiles and empty space( empty space must be above last winning chip unless at top.)
+
+As AI uses alpha-beta pruning, depth-first will be used to generate the game tree.
+
+Alpha-beta pruning should occur as the tree is generated.
+
+forced choice detection
+When encountering forced moves (opponent three in a row, with an opening for a forth)
+disregard all but the opening. No point in checking the alpha-beta of the moves beside
+the opening if there is a forced choice.
+
+Save the tree as a file in storage? If so, How?
+text file?
+
+If AI is 1st player, use standard negafour.
+
+If AI is 2nd player, negate the states.
+Flow of AI 
+Game begin.
+GameTree disctionary would be made.
+Create First board node (empty board)
+Create nodes starting from left most column of board (0) depth first.
+When a winning/losing node is found, track value of state and alpha/beta values.
+Alpha-beta pruning will occur while the tree is made so that the pruned trees arent 
+made to begin with.
+When other branches are created, the board config must be compared to other nodes in the 
+same depth for symmetry (done via checking for board equality on reversed columns)
+if a symmetry is found in the node will not be made.
+If another branch has a node with identical board config to the current board in a 
+seperate branch, the parent of the created node will point to the older identical node,
+Each depth will have a respective lists containing the name of the nodes in the depth
+for quicker searches.
+The values of the older node will carry to its new parent.
+as normal of negamax/alphabeta.
+
+
+Turn begin.
+"look" at the current board state.
+
+class NegaFour:
+
+Global variables
+
+GameTree dictionary
+Depth list(of each depth) of lists(of each node name)
+Aplha
+Beta
+	self.nodeFinder(self,node_name)
+		uses gametree dictionary to find a desired node.
+	
+	self.makeNode (self, pointer-list, board config, negamax, parent list)
+	childList = pointer-list (contains list which contains a list of other nodes.
+	boardState = board config, 
+	---(basic assignments of values to a node)
+
+	
+	
+	downNode(self,currentNode, pointer)
+		Checks the pointer list of the desired direction and returns the node.
+	
+	upNode(self, currentNode, parentpointer)
+		returns a desired parent node.
+	minMaxAssign(self, currentNode, newMinMax)
+		minmax = newMinMax
+
+
+	
+
+
+		
+		
+
+	
+		
+	
