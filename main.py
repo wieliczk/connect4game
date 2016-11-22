@@ -97,7 +97,9 @@ def makeMove(player, board):
 		Pchoice = botMove(player, board) # Somewhere in bot move 
 	return Pchoice
 
+# Finds a move for whichever player 
 def botMove(player, board):
+	# Gets correct tile for the player 
 	if player == 0:
 		tile = PLAYERONE
 	else:
@@ -387,41 +389,54 @@ def checkdagLD(aList, tile, row, level, count):
  
  
 
+
+# Main function of game
 def main():
 	# Incase somehow there is a tie 
-	maxTurns = (MAXHEIGHT * MAXROW)
-	winState = 0 
-	board = Board()
-	board.createBoard()	
-	for i in range(60):
-		print("")
-	turn = 0 # Used to keep track of whose turn it is
-	while turn != maxTurns:
-		#board.tprintb()
-		userChoice = makeMove(turn%2, board)
-		try: 
-			userChoice = int(userChoice)
+	while  True:
+		maxTurns = (MAXHEIGHT * MAXROW)
+		winState = 0 
+		board = Board()
+		board.createBoard()	
+		for i in range(60):
+			print("")
+		turn = 0 # Used to keep track of whose turn it is
+		while turn != maxTurns:
+			#board.tprintb()
+			userChoice = makeMove(turn%2, board)
+			try: 
+				userChoice = int(userChoice)
+			except:
+				break # Only way to get here is through typing exit
+			checkMax = board.chosenMove(userChoice, turn%2)
+			if checkMax == SUCCESS:
+				board.drawBoard()
+				isWin = checkWin(board, userChoice)
+				if isWin == SUCCESS:
+					winState = 1
+					break
+				turn +=1
+			else:
+				print("The maximum number of tiles in that row has been reach try again")
+		if winState == 1:
+			if turn%2 == 0:
+				print("Player 1 has won!")
+			else:
+				print("Player 2 has won!")
+		elif maxTurns == turn:
+			print("I honestly never thought it would get here... All tied up") 
+		else:
+			print("A player has chosen to quit")
+		try:
+			playAgain = input("Play again? y/n: ").lower()
+			if playAgain == "y":
+				continue
+			else:
+				print("Thanks for playing!")
+				return False
 		except:
-			break # Only way to get here is through typing exit
-		checkMax = board.chosenMove(userChoice, turn%2)
-		if checkMax == SUCCESS:
-			board.drawBoard()
-			isWin = checkWin(board, userChoice)
-			if isWin == SUCCESS:
-				winState = 1
-				break
-			turn +=1
-		else:
-			print("The maximum number of tiles in that row has been reach try again")
-	if winState == 1:
-		if turn%2 == 0:
-			print("Player 1 has won!")
-		else:
-			print("Player 2 has won!")
-	elif maxTurns == turn:
-		print("I honestly never thought it would get here... All tied up") 
-	else:
-		print("A player has chosen to quit")
+			print("Incorrect input, exiting.")
+			return False 		
 
 main()
 	
