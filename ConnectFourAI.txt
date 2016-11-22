@@ -108,13 +108,24 @@ Beta
 
 	
 	
-	downNode(self,currentNode, pointer)
+	childNode(self,currentNode, pointer)
 		Checks the pointer list of the desired direction and returns the node.
+	childNodeAss(self, currentNode,parentNode,  pointer)
+		adds child pointer of current node to a new parent node.
+	parentNodeAss(self, currentNode, childNode, pointer) 
 	
-	upNode(self, currentNode, parentpointer)
+	parentNode(self, currentNode, parentpointer)
 		returns a desired parent node.
 	minMaxAssign(self, currentNode, newMinMax)
-		minmax = newMinMax
+		minmax = newMinMax)
+	getMinMax(self,currentNode)
+		returns minmax value.
+	breadthSymCheck(self, boardState, depth)
+		compares the boardstate of the current boardstate in the same depth for symmetry.
+	breadthParenCheck(self, boardState, depth)
+		looks for the boardState in the depth its going into, to see if it should lead to a new parent.
+		returns nodename of similiar boardState.
+		
 
 
 	

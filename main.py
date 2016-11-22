@@ -1,9 +1,9 @@
 """ Main game for Connect Four game
 	Game Requires no input as it is 8 long and 8 high"""
 
-MAXHEIGHT = 8
-MAXROW = 8
-ACCEPTED = [0,1,2,3,4,5,6,7]
+MAXHEIGHT = 6
+MAXROW = 7
+ACCEPTED = [0,1,2,3,4,5,6]
 QUITS = "exit"
 SUCCESS = 1
 FAIL = 0
@@ -57,7 +57,7 @@ class Board:
 				largestBin = [len(self.bRows[i]), i]
 		for i in range(largestBin[0]-1, -1, -1):
 			line = SPACE + "| "
-			for x in range(MAXHEIGHT):
+			for x in range(MAXROW):
 				try:
 					piece = self.bRows[x][i]
 					piece += " "
@@ -81,7 +81,7 @@ def makeMove(player, board):
 		if player == 0:
 			turn = "Player 1: "
 		try:
-			Pchoice = input(turn + "Pick a number on the board from 0-7 to make a move or 'exit' to exit and 'bot' to generate a move: ")
+			Pchoice = input(turn + "Pick a number on the board from 0-6 to make a move or 'exit' to exit and 'bot' to generate a move: ")
 			if Pchoice == GENMOVE:
 				break
 			elif Pchoice == QUITS: # Exits
@@ -249,9 +249,7 @@ def checkWin(board, userChoice):
 				else:
 					return FAIL 
 				
-			
-	# TODO COMPLETE 
-	
+					
 def checkRight(aList, tile, row, level, count):
 	try:
 		if aList[row+1][level] == tile:
