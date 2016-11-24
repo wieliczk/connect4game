@@ -13,6 +13,7 @@ class Node:
         self.parents = []
         self.negamax = None
         self.depth = 0
+        #self.visits = []
 
     def defineNode(self, name, boardconfig, parentsP, negaMax, depth=0, childrenP=[]):
         self.name = name
@@ -21,6 +22,7 @@ class Node:
         self.parents = [parentsP]
         self.negamax = negaMax
         self.depth = depth
+        #self.visits = []
 
     def getNodeName(self):
         return self.name
@@ -55,6 +57,12 @@ class Node:
     def getDepth(self):
         return self.depth
 
+    #def getVisits(self):
+        #return self.visits
+
+    #def addVisits(visit):
+        #self.visits.append(visit)
+
 
 
 #GameTree Builder Code
@@ -63,56 +71,30 @@ class Node:
 #returns a boolean value of weather a board already has a symmetrical
 #copy
 def breadthSymCheck(inBoard, depth):
+    global depthList
     symBoard = deepcopy(inBoard)
     symBoard.bRows.reverse()
     for node in depthList[depth]:
-        if node.board.bRows == symBoard.bRows:
+        if node.getBoard().bRows == symBoard.bRows:
             return True
-        else:
-            return False
+    return False
 
 #returns a boolean value of weather a node with the board already exists in the depth
 def breadthChildCheck(board, depth):
+    global depthList
     for node in depthList[depth]:
-        if node.board == board:
+        if node.getBoard() == board:
             return node
-            break
-        else:
-            return None
+    return None
+            
         
-
-
-#def depthCheck(node):
-#    name = node.getNodeName()
-#    print(name)
-#    count = 0
- #   for number in name:
-  #      if number == "V":
-   #         depth = int(name[count + 1])
-    #        try:
-     #           depth = (depth*10) + int(name[count + 2])
-      #          return depth
-       #     except:
-        #        return depth
-        #count = count + 1
 
 def labelCheck(node):
     name = node.getNodeName()
     return int(name[1:])
         
             
-        
-    
-alpha = None
-beta =  None
-_0 = Node()
-board = Board()
-board.createBoard()
-#print(board)
-_0.defineNode("_0", board, -999, [])
-#print(_0.getBoard())
-GameTree = [_0]
-depthList= [[]]
+
 
 print("-----------treeGen---------")
 
@@ -127,82 +109,109 @@ print("-----------treeGen---------")
     #to that node, and continue going up until the parent node has the potential
     #for new children (unexplored moves)
     #when the generation finally returns to top after all is done, print out
-    #GameTree List
+    #GameTree List      
+    
+global alpha
+alpha = None
+global beta
+beta =  None
+_0 = Node()
+board = Board()
+board.createBoard()
+#print(board)
+_0.defineNode("_0", board, -999, [])
+#print(_0.getBoard())
+global gameTree
+gameTree= [_0]
+global depthList
+depthList = [[]]
+global labelCounter
+labelCounter = 0
+
 def treeGen(node, index):
+    global labelCounter
+    global depthList
     #checks if it the current node is a leaf node
     #and if so , assigns a negamax.
     depth = node.getDepth()
-    if node.getNodeName() == "_0":
-        winLoss = None
+          
+
+    print("---NODE start")
+    #print(node)
+    print(node.getNodeName())
+    print(depth)
+    newBoard = deepcopy(node.getBoard())
+    #checks if the column is full 
+    print("index length: " + str(len(newBoard.bRows[index])))
+    if len(newBoard.bRows[index]) >= 6:
+        for column in range(0, 7):
+            if len(newBoard.bRows[column]) < 6 and (column != index):
+                newBoard.chosenMove(column, depth%2)
+                index = column
+                break
     else:
-        winLoss = checkWin(node.getBoard(),index)
-    if winLoss == 1:
-        if depth%2 == 0: #Even depths are player 1 turns
-            node.negaMaxAss(100)
-        else:
-            node.negaMaxAss(-100)    
-    elif depth == 43:
-        node.negaMaxAss(0)
+        newBoard.chosenMove(index, depth%2)
+    print("Current Node Board: " + str(node.getBoard().bRows))
+    print("new index length: " + str(len(newBoard.bRows[index])))
+    #print(board.bRows)
+    print("index:" + str(index))
+    print(newBoard.bRows)
+
+    
+
+
+
+
+    #Symmetry and multichild checks
+    print("symmetry check!")
+    if breadthSymCheck(newBoard, depth):
+        print("FOUND SYMMETRY")
+        treeGen(node, index + 2)
+        
+    
+    elif breadthChildCheck(newBoard, depth) != None:
+        print("FOUND SHARED CHILD")
+        sharedChild.addParent(node)
+        treeGen(node, index + 2)
+        
+        #print("shared check")
+
+    #the board is unique and thus the node is created.
     else:
-        #If it is not a winner or a tie,
-        #Make a move for the child node
-        
-
-        print("---NODE start")
-        #print(node)
-        print(node.getNodeName())
-        print(depth)
-        newBoard = deepcopy(node.getBoard())
-        #checks if the column is full 
-        print("index length" + str(len(newBoard.bRows[index])))
-        if len(newBoard.bRows[index]) == 6:
-            if index == 6:
-                newBoard.chosenMove(0, depth%2)
-            else:
-                index += 1
-                newBoard.chosenMove(index, depth%2)
-        else:
-            newBoard.chosenMove(index, depth%2)
-        #print(board.bRows)
-        print("index:" + str(index))
-        print(newBoard.bRows)
-
-        
-
-
-
-
-
-
-        #if breadthSymCheck(board, depth) and index < 6:
-          #  board.bRows
-           # treeGen(node, index + 1
-           #print("Sym Check")
-            
-        #sharedChild = breadthChildCheck(board, depth)
-
-        #if sharedChild != None:
-            #sharedChild.addParent(node)
-            #treeGen(node, index + 1)
-            #print("shared check")
-
-        #the board is unique and thus the node is created.       
-        label = str(labelCheck(node) + 1)
-        child = node.newChildNode(str("_" + label), newBoard)
-        print("---Node end")
-
+        labelCounter += 1
+        child = node.newChildNode(str("_" + str(labelCounter)), newBoard)
         if len(depthList) - 1 < child.getDepth():
             depthList.append([])
         depthList[child.getDepth()].append(child)
-        #print(newBoard.bRows)
-
-        #Checks if the move made filled the column,
-        #and if so , goes to the next column.
-        #if len((child.getBoard.bRows[index]) < 7:
-            
-        treeGen(child, index)
-        
-            #treeGen(child,0)
+    
+        winLoss = checkWin(child.getBoard(),index)
+        print("child depth: " + str(child.getDepth()))
+        print("---Node end")
+        print("Check for WIN!")
+        if winLoss == 1:
+            if (depth)%2 == 0: #Even depths are player 1 turns
+                child.negaMaxAss(100)
+                #treeGen(child, index + 1)
+                for x in range(0, 10):
+                    print("WIN")
+                    print(child.getNodeName())
+            else:
+                child.negaMaxAss(-100)
+                for x in range(0, 10):
+                    print("LOSE")
+                #treeGen(child, index + 1)
+        elif depth >= 42:
+            child.negaMaxAss(0)
+            for x in range(0, 10):
+                    print("TIE")
+        else:
+            treeGen(child, index)
+            print("RETURN TO PARENT")
+            try:
+                treeGen(child, index + 2)
+            except:
+                print()
+    
             
                 
 
