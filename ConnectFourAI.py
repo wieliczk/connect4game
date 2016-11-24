@@ -148,20 +148,23 @@ def treeGen(node, index):
         #Make a move for the child node
         
 
-        print("NODE start")
+        print("---NODE start")
         #print(node)
         print(node.getNodeName())
         print(depth)
         newBoard = deepcopy(node.getBoard())
-        #checks if the column is full
+        #checks if the column is full 
+        print("index length" + str(len(newBoard.bRows[index])))
         if len(newBoard.bRows[index]) == 6:
             if index == 6:
                 newBoard.chosenMove(0, depth%2)
             else:
-                newBoard.chosenMove(index + 1, depth%2)
+                index += 1
+                newBoard.chosenMove(index, depth%2)
         else:
             newBoard.chosenMove(index, depth%2)
         #print(board.bRows)
+        print("index:" + str(index))
         print(newBoard.bRows)
 
         
@@ -186,7 +189,7 @@ def treeGen(node, index):
         #the board is unique and thus the node is created.       
         label = str(labelCheck(node) + 1)
         child = node.newChildNode(str("_" + label), newBoard)
-        print("Node end")
+        print("---Node end")
 
         if len(depthList) - 1 < child.getDepth():
             depthList.append([])
