@@ -129,54 +129,79 @@ print("-----------treeGen---------")
     #when the generation finally returns to top after all is done, print out
     #GameTree List
 def treeGen(node, index):
-    print("NODE start")
-    #print(node)
-    print(node.getNodeName())
+    #checks if it the current node is a leaf node
+    #and if so , assigns a negamax.
     depth = node.getDepth()
-    print(depth)
-    board = node.getBoard()
-    newBoard = deepcopy(board)
-    newBoard.chosenMove(index, depth%2)
-    print(board.bRows)
-    print(newBoard.bRows)
-    
-
-    #checks if it is a leaf node and if so , assigns a negamax.
-    if node.name != "_0":
-        winLoss = checkWin(board, index)
-        if winLoss == 1:
+    if node.getNodeName() == "_0":
+        winLoss = None
+    else:
+        winLoss = checkWin(node.getBoard(),index)
+    if winLoss == 1:
+        if depth%2 == 0: #Even depths are player 1 turns
             node.negaMaxAss(100)
-        elif winLoss == 0:
-            node.negaMaxAss(-100)
-        elif depth == 42:
-            node.negaMaxAss(0)
-
-
-
-    #if breadthSymCheck(board, depth) and index < 6:
-      #  board.bRows
-       # treeGen(node, index + 1
-       #print("Sym Check")
+        else:
+            node.negaMaxAss(-100)    
+    elif depth == 43:
+        node.negaMaxAss(0)
+    else:
+        #If it is not a winner or a tie,
+        #Make a move for the child node
         
-    #sharedChild = breadthChildCheck(board, depth)
 
-    #if sharedChild != None:
-        #sharedChild.addParent(node)
-        #treeGen(node, index + 1)
-        #print("shared check")
+        print("NODE start")
+        #print(node)
+        print(node.getNodeName())
+        print(depth)
+        newBoard = deepcopy(node.getBoard())
+        #checks if the column is full
+        if len(newBoard.bRows[index]) == 6:
+            if index == 6:
+                newBoard.chosenMove(0, depth%2)
+            else:
+                newBoard.chosenMove(index + 1, depth%2)
+        else:
+            newBoard.chosenMove(index, depth%2)
+        #print(board.bRows)
+        print(newBoard.bRows)
 
-    #the board is unique and thus the node is created.
-   
-    label = labelCheck(node)
-    label = str(label + 1)
-    child = node.newChildNode(str("_" + label), newBoard)
-    print("Node end")
+        
 
-    if len(depthList) - 1 < child.getDepth():
-        depthList.append([])
-    depthList[child.getDepth()].append(child)
-    #print(newBoard.bRows)
-    treeGen(child, index)
+
+
+
+
+
+        #if breadthSymCheck(board, depth) and index < 6:
+          #  board.bRows
+           # treeGen(node, index + 1
+           #print("Sym Check")
+            
+        #sharedChild = breadthChildCheck(board, depth)
+
+        #if sharedChild != None:
+            #sharedChild.addParent(node)
+            #treeGen(node, index + 1)
+            #print("shared check")
+
+        #the board is unique and thus the node is created.       
+        label = str(labelCheck(node) + 1)
+        child = node.newChildNode(str("_" + label), newBoard)
+        print("Node end")
+
+        if len(depthList) - 1 < child.getDepth():
+            depthList.append([])
+        depthList[child.getDepth()].append(child)
+        #print(newBoard.bRows)
+
+        #Checks if the move made filled the column,
+        #and if so , goes to the next column.
+        #if len((child.getBoard.bRows[index]) < 7:
+            
+        treeGen(child, index)
+        
+            #treeGen(child,0)
+            
+                
 
  
 treeGen(_0, 0)
